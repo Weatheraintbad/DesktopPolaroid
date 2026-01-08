@@ -1,5 +1,7 @@
 <div align="center">
 
+<img width="256" height="256" alt="Desktop Polaroid-iOS-Dark-128x128@2x" src="https://github.com/user-attachments/assets/41d671b5-d266-44bd-9b3c-b619af4975f3" />
+
 # 拍立得桌面贴 Desktop Polaroid
 一款可以将照片制作成宝丽来风格拍立得照片并贴在电脑桌面的MacOS应用。<br>
 A MacOS app that allows you to make photos into Polaroid-style instant photos and paste them on your computer desktop.

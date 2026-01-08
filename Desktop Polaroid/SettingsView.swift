@@ -212,6 +212,7 @@ struct SettingsView: View {
             .padding(.horizontal, 30)
             .padding(.bottom, 40)
         }
+        .frame(minWidth: 600, minHeight: 600)
     }
     
     private func resetSettings() {

@@ -2,8 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var polaroidManager: PolaroidManager
-    @AppStorage("hasShownWelcome") private var hasShownWelcome = false
-    @State private var showingWelcomeModal = false
+    @State private var showingWelcomeModal = false  // 控制是否显示欢迎页面
     @State private var selectedTab: SidebarTab = .create
     
     enum SidebarTab: String, CaseIterable {
@@ -50,117 +49,32 @@ struct ContentView: View {
                 case .manage:
                     ManagePolaroidsView()
                 case .settings:
-                    SettingsView()
+                    SettingsView()  // 使用恢复的设置界面
                 case .help:
-                    HelpView()
+                    HelpView()      // 使用帮助视图
                 }
             }
-            .frame(minWidth: 600, minHeight: 600)
+            .frame(minWidth: 700, minHeight: 600)
         }
         .onAppear {
-            // 首次启动显示欢迎弹窗
-            if !hasShownWelcome {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            // 检查用户是否选择了"不再显示"
+            let skipWelcome = UserDefaults.standard.bool(forKey: "skipWelcomeScreen")
+            
+            if !skipWelcome {
+                // 用户没有选择跳过，显示欢迎页面
+                // 使用主队列确保在视图加载完成后显示
+                DispatchQueue.main.async {
                     showingWelcomeModal = true
                 }
             }
+        }        .sheet(isPresented: $showingWelcomeModal) {
+            WelcomeModalView(isPresented: $showingWelcomeModal)
         }
-        .sheet(isPresented: $showingWelcomeModal) {
-            WelcomeModalView()
-        }
+        .frame(minWidth: 1000, minHeight: 700)
     }
     
     private func toggleSidebar() {
         NSApp.keyWindow?.firstResponder?
             .tryToPerform(#selector(NSSplitViewController.toggleSidebar(_:)), with: nil)
-    }
-}
-
-struct WelcomeModalView: View {
-    @Environment(\.dismiss) var dismiss
-    
-    var body: some View {
-        VStack(spacing: 30) {
-            // 标题
-            VStack(spacing: 10) {
-                Image(systemName: "camera.on.rectangle")
-                    .font(.system(size: 60))
-                    .foregroundColor(.blue)
-                
-                Text("欢迎使用拍立得桌面贴")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                Text("将您最爱的照片变成桌面上的精美拍立得贴纸")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-            }
-            .padding(.top, 40)
-            
-            // 功能介绍
-            VStack(alignment: .leading, spacing: 25) {
-                FeatureRow(
-                    icon: "photo.fill",
-                    title: "添加照片",
-                    description: "从您的电脑中选择照片，创建个性化的拍立得贴纸"
-                )
-                
-                FeatureRow(
-                    icon: "paintbrush.fill",
-                    title: "自定义相框",
-                    description: "调整相框颜色、宽度和阴影效果，打造独特外观"
-                )
-                
-                FeatureRow(
-                    icon: "text.bubble.fill",
-                    title: "添加标注",
-                    description: "为每张照片添加标题和日期，记录美好时刻"
-                )
-                
-                FeatureRow(
-                    icon: "rectangle.and.pencil.and.ellipsis",
-                    title: "桌面交互",
-                    description: "在桌面上自由拖动、旋转贴纸，双击可重新编辑"
-                )
-            }
-            .padding(.horizontal, 40)
-            
-            Spacer()
-            
-            // 开始按钮
-            Button(action: { dismiss() }) {
-                Text("开始使用")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .frame(width: 200, height: 50)
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .padding(.bottom, 40)
-        }
-        .frame(width: 600, height: 700)
-    }
-}
-
-struct FeatureRow: View {
-    let icon: String
-    let title: String
-    let description: String
-    
-    var body: some View {
-        HStack(spacing: 20) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(.blue)
-                .frame(width: 40)
-            
-            VStack(alignment: .leading, spacing: 5) {
-                Text(title)
-                    .font(.headline)
-                Text(description)
-                    .font(.body)
-                    .foregroundColor(.secondary)
-            }
-        }
     }
 }

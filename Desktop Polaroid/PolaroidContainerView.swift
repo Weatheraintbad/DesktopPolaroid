@@ -53,7 +53,10 @@ struct PolaroidContainerView: View {
             window.backgroundColor = .clear
             window.isOpaque = false
             window.hasShadow = true
-            window.level = .floating
+            
+            let desktopLevel = NSWindow.Level(Int(CGWindowLevelForKey(.desktopWindow)) + 1)
+            window.level = desktopLevel
+            
             window.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
             window.makeKeyAndOrderFront(nil)
         }

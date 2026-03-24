@@ -144,13 +144,12 @@ struct PolaroidCardView: View {
                         
                         HStack(spacing: 10) {
                             if polaroidManager.isWindowOpen(for: polaroid.id) {
-                                Button("已贴在桌面") {
-                                    // 可以添加聚焦到窗口的功能
+                                Button("从桌面移除") {
+                                    polaroidManager.closeWindowForPolaroid(polaroid.id)
                                 }
                                 .buttonStyle(.bordered)
                                 .font(.caption)
-                                .foregroundColor(.green)
-                                .disabled(true)
+                                .foregroundColor(.orange)
                             } else {
                                 Button("贴到桌面") {
                                     polaroidManager.reopenPolaroid(polaroid)

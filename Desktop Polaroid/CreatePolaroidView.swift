@@ -269,20 +269,26 @@ struct CreatePolaroidView: View {
     
     private func createPolaroid() {
         guard selectedImage != nil else { return }
-        
+
+        // 修复：检查图片数据是否存在，避免创建空拍立得
+        guard newPolaroid.imageData != nil else {
+            showErrorMessage(message: "图片处理失败，请尝试使用其他图片或减小图片尺寸。")
+            return
+        }
+
         // 设置默认位置在屏幕中央
         let screenSize = NSScreen.main?.visibleFrame.size ?? CGSize(width: 1440, height: 900)
         newPolaroid.position = CGPoint(
             x: screenSize.width / 2 - newPolaroid.size.width / 2,
             y: screenSize.height / 2 - newPolaroid.size.height / 2
         )
-        
+
         // 添加到管理器 - 这会自动创建窗口
         polaroidManager.addPolaroid(newPolaroid)
-        
+
         // 显示成功提示
         showSuccessMessage()
-        
+
         // 重置表单
         selectedImage = nil
         newPolaroid = Polaroid()
@@ -293,6 +299,15 @@ struct CreatePolaroidView: View {
         alert.messageText = "拍立得已创建"
         alert.informativeText = "拍立得已成功添加到桌面。您可以在管理界面查看和管理所有拍立得。"
         alert.alertStyle = .informational
+        alert.addButton(withTitle: "确定")
+        alert.runModal()
+    }
+
+    private func showErrorMessage(message: String) {
+        let alert = NSAlert()
+        alert.messageText = "创建失败"
+        alert.informativeText = message
+        alert.alertStyle = .critical
         alert.addButton(withTitle: "确定")
         alert.runModal()
     }

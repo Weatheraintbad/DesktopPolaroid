@@ -57,18 +57,18 @@ struct HelpView: View {
                         .fontWeight(.semibold)
                     
                     FAQItem(
-                        question: "拍立得贴纸会影响我的桌面性能吗？",
+                        question: "拍立得贴纸会影响桌面性能吗？",
                         answer: "不会。拍立得贴纸使用优化的渲染技术，对系统性能影响极小。"
                     )
                     
                     FAQItem(
                         question: "如何删除桌面上的拍立得？",
-                        answer: "点击拍立得右上角的X按钮，或右键点击选择删除选项。"
+                        answer: "点击拍立得右上角的X按钮；右键点击选择“从桌面撤下”。"
                     )
                     
                     FAQItem(
                         question: "拍立得的数据保存在哪里？",
-                        answer: "所有拍立得数据都保存在本地，支持备份和恢复。"
+                        answer: "所有拍立得数据都保存在本地，路径为/Library/Application Support/DesktopPolaroid/Images/"
                     )
                     
                     FAQItem(
@@ -86,27 +86,18 @@ struct HelpView: View {
                         .fontWeight(.semibold)
                     
                     VStack(alignment: .leading, spacing: 15) {
-                        HStack {
-                            Image(systemName: "book.fill")
-                                .foregroundColor(.blue)
-                                .frame(width: 30)
-                            Text("查看完整教程")
-                                .font(.headline)
-                            Spacer()
-                            Button("打开教程") {
-                                showingTutorial = true
-                            }
-                            .buttonStyle(.bordered)
-                        }
                         
                         HStack {
                             Image(systemName: "envelope.fill")
                                 .foregroundColor(.blue)
                                 .frame(width: 30)
-                            Text("联系支持团队")
+                            Text("获取在线支持")
                                 .font(.headline)
                             Spacer()
-                            Link("发送邮件", destination: URL(string: "mailto:support@polaroiddesktop.com")!)
+                            Link(
+                                "查看联系方式",
+                                destination: URL(string: "https://weatheraintbad.com/index#contact")!
+                            )
                                 .buttonStyle(.bordered)
                         }
                         
@@ -114,11 +105,28 @@ struct HelpView: View {
                             Image(systemName: "globe")
                                 .foregroundColor(.blue)
                                 .frame(width: 30)
-                            Text("访问官方网站")
+                            Text("访问产品页面")
                                 .font(.headline)
                             Spacer()
-                            Link("打开网站", destination: URL(string: "https://example.com")!)
+                            Link("打开产品页面", destination: URL(string: "https://app.weatheraintbad.com/DesktopPolaroid")!)
                                 .buttonStyle(.bordered)
+                        }
+
+                        HStack {
+                            Image(systemName: "folder.fill")
+                                .foregroundColor(.blue)
+                                .frame(width: 30)
+                            Text("查看照片文件")
+                                .font(.headline)
+                            Spacer()
+                            Button("打开文件夹") {
+                                if let imagesDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
+                                    .appendingPathComponent("DesktopPolaroid")
+                                    .appendingPathComponent("Images") {
+                                    NSWorkspace.shared.open(imagesDir)
+                                }
+                            }
+                            .buttonStyle(.bordered)
                         }
                     }
                 }

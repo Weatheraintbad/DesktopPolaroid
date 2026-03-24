@@ -243,18 +243,25 @@ class PolaroidManager: ObservableObject {
     
     private func createWindowForPolaroid(_ polaroid: Polaroid) {
         guard activeWindows[polaroid.id] == nil else { return }
-        
+
         let contentView = PolaroidView(polaroid: polaroid)
             .environmentObject(self)
-        
+
         let hostingView = NSHostingView(rootView: contentView)
-        
-        guard let screen = NSScreen.main else { return }
-        let screenRect = screen.visibleFrame
-        
+
+        // 修复NSScreen.main为nil的情况，增加fallback
+        let screenRect: NSRect
+        if let screen = NSScreen.main {
+            screenRect = screen.visibleFrame
+        } else {
+            // 使用默认屏幕尺寸
+            screenRect = NSRect(x: 0, y: 0, width: 1440, height: 900)
+            print("Warning: NSScreen.main is nil, using default screen size")
+        }
+
         var windowX = polaroid.position.x
         var windowY = polaroid.position.y
-        
+
         if windowX < screenRect.minX {
             windowX = screenRect.minX + 50
         }
@@ -267,7 +274,7 @@ class PolaroidManager: ObservableObject {
         if windowY + polaroid.size.height > screenRect.maxY {
             windowY = screenRect.maxY - polaroid.size.height - 50
         }
-        
+
         let window = PolaroidWindow(
             contentRect: NSRect(
                 origin: NSPoint(x: windowX, y: windowY),
@@ -277,21 +284,22 @@ class PolaroidManager: ObservableObject {
             backing: .buffered,
             defer: false
         )
-        
+
         window.title = "polaroid_\(polaroid.id)"
         window.contentView = hostingView
-        
-        // 修正：使用正确的窗口级别
+
+        // 修复：使用更可靠的窗口级别，兼容所有系统版本
         let desktopWindowLevel = Int(CGWindowLevelForKey(.desktopWindow))
         let desktopIconWindowLevel = Int(CGWindowLevelForKey(.desktopIconWindow))
         let customDesktopLevel = max(desktopWindowLevel, desktopIconWindowLevel) + 20
         window.level = NSWindow.Level(rawValue: customDesktopLevel)
-        
-        window.collectionBehavior = [.canJoinAllSpaces, .stationary]
-        
+
+        // 修复：保留完整的collectionBehavior属性，避免被覆盖
+        // 初始化方法中已经设置了完整的behavior，这里不需要重复设置
+
         window.orderFrontRegardless()
-        window.makeKeyAndOrderFront(nil)
-        
+        // 移除无效的makeKeyAndOrderFront调用，因为窗口canBecomeKey为false
+
         activeWindows[polaroid.id] = window
         
         // 简化通知处理，避免并发问题
